@@ -11,7 +11,7 @@
     </parent>
 
     <groupId>org.athos.core</groupId>
-    <artifactId>athos-core</artifactId>
+    <artifactId>be-core</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>be-core</name>
     <description>be-core</description>
