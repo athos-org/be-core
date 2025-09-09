@@ -16,6 +16,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Optional;
 import java.util.function.Function;
 
 @Log4j2
@@ -39,8 +41,12 @@ public class AthosAuthenticationFilter extends OncePerRequestFilter {
     if (internalApiService.getInternalServiceAddresses().contains(request.getRemoteAddr())) {
       isAuthenticated = true;
     } else {
-      var internalApiKey = headers.get(RequestHeaders.X_INTERNAL_API_TOKEN.getValue()).getFirst();
-      isAuthenticated = internalApiService.getInternalApiKeys().contains(internalApiKey);
+      var internalApiKey = headers
+          .getOrDefault(RequestHeaders.X_INTERNAL_API_TOKEN.getValue(), Collections.singletonList(null))
+          .getFirst();
+      isAuthenticated = Optional.ofNullable(internalApiKey)
+          .map(internalApiService.getInternalApiKeys()::contains)
+          .orElse(false);
     }
 
     if (isAuthenticated) {
