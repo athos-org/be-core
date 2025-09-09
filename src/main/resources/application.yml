@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: be-core
+  threads:
+    virtual:
+      enabled: true
+
+integrations:
+  vault:
+    url: ${VAULT_URL:http://vault:8200}
+    role-id: ${VAULT_ROLE_ID}
+    secret-id: ${VAULT_SECRET_ID}
+    secret-root: ${VAULT_SECRET_ROOT:secrets}
