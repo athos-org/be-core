@@ -17,6 +17,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -31,32 +33,35 @@ public class AthosAuthenticationFilter extends OncePerRequestFilter {
   protected void doFilterInternal(HttpServletRequest request,
                                   HttpServletResponse response,
                                   FilterChain filterChain) throws ServletException, IOException {
-    var isAuthenticated = false;
     var headers = StreamEx.of(request.getHeaderNames())
         .toMap(Function.identity(), header -> StreamEx.of(request.getHeaders(header)).toList());
 
     requestContext.populateContext(headers);
     log.info("Incoming request: [{}] {}", request.getMethod(), request.getRequestURI());
 
-    if (internalApiService.getInternalServiceAddresses().contains(request.getRemoteAddr())) {
-      isAuthenticated = true;
-    } else {
-      var internalApiKey = headers
-          .getOrDefault(RequestHeaders.X_INTERNAL_API_TOKEN.getValue(), Collections.singletonList(null))
-          .getFirst();
-      isAuthenticated = Optional.ofNullable(internalApiKey)
-          .map(internalApiService.getInternalApiKeys()::contains)
-          .orElse(false);
-    }
-
+    boolean isAuthenticated = authenticateRequest(request, headers);
     if (isAuthenticated) {
       var grants = requestContext.getUserPermissions().stream().map(SimpleGrantedAuthority::new).toList();
       var authentication = new UsernamePasswordAuthenticationToken(requestContext.getUserEmail(), null, grants);
       SecurityContextHolder.getContext().setAuthentication(authentication);
 
+      log.info("Request authenticated successfully: [{}] {}", request.getMethod(), request.getRequestURI());
       filterChain.doFilter(request, response);
-      log.info("Completed request: [{}] {}, result: {}", request.getMethod(), request.getRequestURI(), response.getStatus());
+    } else {
+      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     }
+  }
+
+  private boolean authenticateRequest(HttpServletRequest request, Map<String, List<String>> headers) {
+    if (internalApiService.getInternalServiceAddresses().contains(request.getRemoteAddr())) {
+      return true;
+    }
+    var internalApiKey = headers
+        .getOrDefault(RequestHeaders.X_INTERNAL_API_TOKEN.getValue(), Collections.singletonList(null))
+        .getFirst();
+    return Optional.ofNullable(internalApiKey)
+        .map(internalApiService.getInternalApiKeys()::contains)
+        .orElse(false);
   }
 
 }

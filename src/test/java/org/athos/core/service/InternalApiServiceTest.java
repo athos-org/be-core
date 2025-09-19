@@ -29,10 +29,10 @@ public class InternalApiServiceTest extends CoreTest {
     var internalApiKeys = internalApiService.getInternalApiKeys();
 
     assertEquals(1, internalApiKeys.size());
-    assertTrue(internalApiKeys.contains("internal-api-key"));
+    assertTrue(internalApiKeys.contains(TEST_API_KEY));
 
     // Add a new key to Vault
-    vaultContainer.execInContainer("vault", "kv", "patch", "secrets/internal-api-key", "value=internal-api-key-2");
+    vaultContainer.execInContainer("vault", "kv", "patch", "secrets/internal-api-key", "value=" + TEST_API_KEY + "2" );
     // Wait for 1 second to ensure the cache expires
     Thread.sleep(1000);
 
@@ -40,8 +40,8 @@ public class InternalApiServiceTest extends CoreTest {
     internalApiKeys = internalApiService.getInternalApiKeys();
 
     assertEquals(2, internalApiKeys.size());
-    assertTrue(internalApiKeys.contains("internal-api-key"));
-    assertTrue(internalApiKeys.contains("internal-api-key-2"));
+    assertTrue(internalApiKeys.contains(TEST_API_KEY));
+    assertTrue(internalApiKeys.contains(TEST_API_KEY + "2"));
   }
 
 }
