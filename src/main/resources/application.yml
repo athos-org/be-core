@@ -11,3 +11,10 @@ integrations:
     role-id: ${VAULT_ROLE_ID}
     secret-id: ${VAULT_SECRET_ID}
     secret-root: ${VAULT_SECRET_ROOT:secrets}
+
+athos:
+  caches:
+    api-key:
+      current: ${ATHOS_CACHES_API_KEY_CURRENT:3600}
+      previous: ${ATHOS_CACHES_API_KEY_PREVIOUS:900}
+    gateway-address: ${ATHOS_CACHES_GATEWAY_ADDRESS:3600}
