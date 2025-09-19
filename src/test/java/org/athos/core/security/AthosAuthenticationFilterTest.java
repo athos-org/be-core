@@ -94,6 +94,7 @@ public class AthosAuthenticationFilterTest {
 
     athosAuthenticationFilter.doFilterInternal(request, response, filterChain);
 
+    verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     verify(filterChain, never()).doFilter(request, response);
     assertNull(SecurityContextHolder.getContext().getAuthentication());
   }
@@ -111,6 +112,7 @@ public class AthosAuthenticationFilterTest {
 
     athosAuthenticationFilter.doFilterInternal(request, response, filterChain);
 
+    verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     verify(filterChain, never()).doFilter(request, response);
     assertNull(SecurityContextHolder.getContext().getAuthentication());
   }

@@ -13,6 +13,8 @@ import static org.testcontainers.utility.MountableFile.forClasspathResource;
 
 public abstract class CoreTest {
 
+  public static final String TEST_API_KEY = "internal-api-key";
+
   protected static final VaultContainer<?> vaultContainer = new VaultContainer<>("hashicorp/vault:1.15");
 
   @BeforeAll
@@ -24,7 +26,7 @@ public abstract class CoreTest {
             "auth enable approle",
             "write sys/policies/acl/internal-policy policy=@/vault/internal-policy.hcl",
             "write auth/approle/role/my-role token_policies=internal-policy secret_id_ttl=0 token_ttl=20m token_max_ttl=30m",
-            "kv put secrets/internal-api-key value=internal-api-key"
+            "kv put secrets/internal-api-key value=" + TEST_API_KEY
         ).start();
   }
 
