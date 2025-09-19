@@ -9,18 +9,23 @@ import org.testcontainers.vault.VaultContainer;
 import java.io.IOException;
 import java.util.UUID;
 
+import static org.testcontainers.utility.MountableFile.forClasspathResource;
+
 public abstract class CoreTest {
 
-  private static final VaultContainer<?> vaultContainer = new VaultContainer<>("hashicorp/vault:1.15");
+  protected static final VaultContainer<?> vaultContainer = new VaultContainer<>("hashicorp/vault:1.15");
 
   @BeforeAll
   static void beforeAll() {
-    vaultContainer.withVaultToken(UUID.randomUUID().toString()).withInitCommand(
-        "secrets enable -path=secrets kv-v2",
-        "auth enable approle",
-        "write auth/approle/role/my-role token_policies=default secret_id_ttl=0 token_ttl=20m token_max_ttl=30m",
-        "kv put secrets/internal-api-key value=internal-api-key"
-    ).start();
+    vaultContainer.withVaultToken(UUID.randomUUID().toString())
+        .withCopyFileToContainer(forClasspathResource("vault/internal-policy.hcl"), "/vault/internal-policy.hcl")
+        .withInitCommand(
+            "secrets enable -path=secrets kv-v2",
+            "auth enable approle",
+            "write sys/policies/acl/internal-policy policy=@/vault/internal-policy.hcl",
+            "write auth/approle/role/my-role token_policies=internal-policy secret_id_ttl=0 token_ttl=20m token_max_ttl=30m",
+            "kv put secrets/internal-api-key value=internal-api-key"
+        ).start();
   }
 
   @AfterAll

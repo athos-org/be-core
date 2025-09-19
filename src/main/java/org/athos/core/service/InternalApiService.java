@@ -7,6 +7,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import one.util.streamex.StreamEx;
 import org.athos.core.service.secure.SecureStoreService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.net.InetAddress;
@@ -27,17 +28,24 @@ public class InternalApiService {
   private Cache<String, String> previousKeyCache;
   private Cache<String, String> gatewayAddressCache;
 
+  @Value("${athos.caches.api-key.current:3600}")
+  private int currentKeyExpiration;
+  @Value("${athos.caches.api-key.previous:900}")
+  private int previousKeyExpiration;
+  @Value("${athos.caches.gateway-address:3600}")
+  private int gatewayAddressExpiration;
+
   @PostConstruct
   public void init() {
     currentKeyCache = Caffeine.newBuilder().maximumSize(1)
-        .expireAfterWrite(60, TimeUnit.MINUTES)
+        .expireAfterWrite(currentKeyExpiration, TimeUnit.SECONDS)
         .evictionListener(this::keyExpirationCallback)
         .build();
     previousKeyCache = Caffeine.newBuilder().maximumSize(1)
-        .expireAfterWrite(15, TimeUnit.MINUTES)
+        .expireAfterWrite(previousKeyExpiration, TimeUnit.SECONDS)
         .build();
     gatewayAddressCache = Caffeine.newBuilder().maximumSize(1)
-        .expireAfterWrite(60, TimeUnit.MINUTES)
+        .expireAfterWrite(gatewayAddressExpiration, TimeUnit.SECONDS)
         .build();
   }
 
