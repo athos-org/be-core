@@ -1,4 +1,4 @@
-package org.athos.core;
+package org.athos.core.support;
 
 import lombok.experimental.UtilityClass;
 
