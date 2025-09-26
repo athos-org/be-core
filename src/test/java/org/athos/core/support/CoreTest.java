@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.vault.VaultContainer;
 
 import java.io.IOException;
@@ -16,6 +17,7 @@ import java.util.UUID;
 
 import static org.testcontainers.utility.MountableFile.forClasspathResource;
 
+@Testcontainers
 public abstract class CoreTest {
 
   public static final String TEST_API_KEY = "internal-api-key";

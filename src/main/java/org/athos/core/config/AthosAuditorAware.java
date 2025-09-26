@@ -23,7 +23,7 @@ public class AthosAuditorAware implements AuditorAware<UUID> {
     try {
       return Optional.of(UUID.fromString(requestContext.getUserId()));
     } catch (Exception e) {
-      log.warn("getCurrentAuditor:: Invalid userId format: {} for request id: {}", requestContext.getUserId(), requestContext.getRequestId(), e);
+      log.warn("getCurrentAuditor:: Invalid userId format: {} for request id: {}", requestContext.getUserId(), requestContext.getRequestId());
       return Optional.empty();
     }
   }

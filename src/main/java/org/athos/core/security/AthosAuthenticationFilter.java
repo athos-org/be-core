@@ -45,8 +45,8 @@ public class AthosAuthenticationFilter extends OncePerRequestFilter {
       var authentication = new UsernamePasswordAuthenticationToken(requestContext.getUserEmail(), null, grants);
       SecurityContextHolder.getContext().setAuthentication(authentication);
 
-      log.info("Request authenticated successfully: [{}] {}", request.getMethod(), request.getRequestURI());
       filterChain.doFilter(request, response);
+      log.info("Request completed with status {}: [{}] {}", response.getStatus(), request.getMethod(), request.getRequestURI());
     } else {
       response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     }
