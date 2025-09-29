@@ -3,6 +3,7 @@ package org.athos.core.domain.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Version;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -39,5 +40,9 @@ public abstract class AuditableEntity {
   @LastModifiedBy
   @Column(name = "updated_by")
   private UUID updatedBy;
+
+  @Version
+  @Column(name = "version", nullable = false)
+  private Long version;
 
 }
