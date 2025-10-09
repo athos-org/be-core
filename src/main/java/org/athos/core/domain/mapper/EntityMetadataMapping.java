@@ -6,7 +6,14 @@ import org.mapstruct.Mapping;
 @Mapping(target = "createdDate", ignore = true)
 @Mapping(target = "updatedBy", ignore = true)
 @Mapping(target = "updatedDate", ignore = true)
-@Mapping(target = "version", source = "metadata.version")
 public @interface EntityMetadataMapping {
+
+  @EntityMetadataMapping
+  @Mapping(target = "version", source = "metadata.version")
+  @interface WithVersion {}
+
+  @EntityMetadataMapping
+  @Mapping(target = "version", ignore = true)
+  @interface WithoutVersion {}
 
 }
