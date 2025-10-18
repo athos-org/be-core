@@ -1,6 +1,5 @@
 package org.athos.core.security;
 
-import org.athos.core.context.RequestContext;
 import org.athos.core.service.InternalApiService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,8 +15,7 @@ public class AthosSecurityConfiguration {
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity,
-                                                 InternalApiService internalApiService,
-                                                 RequestContext requestContext) throws Exception {
+                                                 InternalApiService internalApiService) throws Exception {
     return httpSecurity
         .cors(Customizer.withDefaults())
         .csrf(AbstractHttpConfigurer::disable)
@@ -26,7 +24,7 @@ public class AthosSecurityConfiguration {
         .formLogin(AbstractHttpConfigurer::disable)
         .logout(AbstractHttpConfigurer::disable)
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .addFilterBefore(new AthosAuthenticationFilter(internalApiService, requestContext), UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(new AthosAuthenticationFilter(internalApiService), UsernamePasswordAuthenticationFilter.class)
         .build();
   }
 

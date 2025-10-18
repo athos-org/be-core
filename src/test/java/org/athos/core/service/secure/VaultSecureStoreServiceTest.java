@@ -4,7 +4,7 @@ import com.bettercloud.vault.Vault;
 import com.bettercloud.vault.VaultException;
 import com.bettercloud.vault.api.Logical;
 import com.bettercloud.vault.response.LogicalResponse;
-import org.athos.core.support.TestUtils;
+import org.athos.core.support.CoreTestUtils;
 import org.athos.core.config.VaultConfiguration;
 import org.athos.core.domain.exception.SecureStoreServiceException;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +36,7 @@ public class VaultSecureStoreServiceTest {
   void setUp() {
     when(vault.logical()).thenReturn(mock(Logical.class));
     when(config.getSecretRoot()).thenReturn("root");
-    TestUtils.setInternalState(vaultSecureStoreService, "vault", vault);
+    CoreTestUtils.setInternalState(vaultSecureStoreService, "vault", vault);
   }
 
   @Test
