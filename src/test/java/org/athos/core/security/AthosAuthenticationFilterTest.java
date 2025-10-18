@@ -3,8 +3,7 @@ package org.athos.core.security;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.athos.core.context.RequestContext;
-import org.athos.core.context.RequestHeaders;
+import org.athos.core.scope.context.AthosRequestHeaders;
 import org.athos.core.service.InternalApiService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,8 +29,6 @@ import static org.mockito.Mockito.when;
 public class AthosAuthenticationFilterTest {
 
   @Mock
-  private RequestContext requestContext;
-  @Mock
   private InternalApiService internalApiService;
   @InjectMocks
   private AthosAuthenticationFilter athosAuthenticationFilter;
@@ -54,7 +51,6 @@ public class AthosAuthenticationFilterTest {
     athosAuthenticationFilter.doFilterInternal(request, response, filterChain);
 
     verify(filterChain).doFilter(request, response);
-    verify(requestContext).getUserPermissions();
     assertNotNull(SecurityContextHolder.getContext().getAuthentication());
   }
 
@@ -65,11 +61,11 @@ public class AthosAuthenticationFilterTest {
     var filterChain = mock(FilterChain.class);
 
     var headers = new HashMap<String, List<String>>();
-    headers.put(RequestHeaders.X_INTERNAL_API_TOKEN.getValue(), List.of("validApiKey"));
+    headers.put(AthosRequestHeaders.X_INTERNAL_API_TOKEN.getValue(), List.of("validApiKey"));
 
     when(request.getHeaderNames()).thenReturn(Collections.enumeration(headers.keySet()));
-    when(request.getHeaders(RequestHeaders.X_INTERNAL_API_TOKEN.getValue()))
-        .thenReturn(Collections.enumeration(headers.get(RequestHeaders.X_INTERNAL_API_TOKEN.getValue())));
+    when(request.getHeaders(AthosRequestHeaders.X_INTERNAL_API_TOKEN.getValue()))
+        .thenReturn(Collections.enumeration(headers.get(AthosRequestHeaders.X_INTERNAL_API_TOKEN.getValue())));
     when(internalApiService.getInternalApiKeys()).thenReturn(Set.of("validApiKey"));
 
     athosAuthenticationFilter.doFilterInternal(request, response, filterChain);
@@ -85,11 +81,11 @@ public class AthosAuthenticationFilterTest {
     var filterChain = mock(FilterChain.class);
 
     var headers = new HashMap<String, List<String>>();
-    headers.put(RequestHeaders.X_INTERNAL_API_TOKEN.getValue(), List.of("invalidApiKey"));
+    headers.put(AthosRequestHeaders.X_INTERNAL_API_TOKEN.getValue(), List.of("invalidApiKey"));
 
     when(request.getHeaderNames()).thenReturn(Collections.enumeration(headers.keySet()));
-    when(request.getHeaders(RequestHeaders.X_INTERNAL_API_TOKEN.getValue()))
-        .thenReturn(Collections.enumeration(headers.get(RequestHeaders.X_INTERNAL_API_TOKEN.getValue())));
+    when(request.getHeaders(AthosRequestHeaders.X_INTERNAL_API_TOKEN.getValue()))
+        .thenReturn(Collections.enumeration(headers.get(AthosRequestHeaders.X_INTERNAL_API_TOKEN.getValue())));
     when(internalApiService.getInternalApiKeys()).thenReturn(Set.of("validApiKey"));
 
     athosAuthenticationFilter.doFilterInternal(request, response, filterChain);
