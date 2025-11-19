@@ -8,6 +8,7 @@ import one.util.streamex.StreamEx;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 @Log4j2
 @NoArgsConstructor
@@ -29,7 +30,7 @@ public class DefaultAthosExecutionContext implements AthosExecutionContext {
     this.requestId = getHeaderValue(headers, AthosRequestHeaders.X_KONG_REQUEST_ID);
     this.userId = getHeaderValue(headers, AthosRequestHeaders.X_USER_ID);
     this.userEmail = getHeaderValue(headers, AthosRequestHeaders.X_USER_EMAIL);
-    this.userPermissions = getHeaderValues(headers, AthosRequestHeaders.X_USER_PERMISSIONS);
+    this.userPermissions = getHeaderValuesCsv(headers, AthosRequestHeaders.X_USER_PERMISSIONS);
   }
 
   private static String getHeaderValue(Map<String, Collection<String>> headers, AthosRequestHeaders header) {
@@ -38,6 +39,13 @@ public class DefaultAthosExecutionContext implements AthosExecutionContext {
 
   private static Collection<String> getHeaderValues(Map<String, Collection<String>> headers, AthosRequestHeaders header) {
     return headers.getOrDefault(header.getValue(), Collections.emptyList());
+  }
+
+  private static Collection<String> getHeaderValuesCsv(Map<String, Collection<String>> headers, AthosRequestHeaders header) {
+    return Optional.ofNullable(headers.get(header.getValue()))
+        .flatMap(values -> values.stream().findFirst())
+        .map(csv -> StreamEx.of(csv.split(",")).map(String::trim).toList())
+        .orElseGet(Collections::emptyList);
   }
 
 }
