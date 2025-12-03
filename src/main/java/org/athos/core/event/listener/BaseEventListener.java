@@ -1,6 +1,8 @@
 package org.athos.core.event.listener;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import one.util.streamex.StreamEx;
 import org.athos.core.scope.context.AthosRequestHeaders;
@@ -38,16 +40,18 @@ public abstract class BaseEventListener {
     }
   }
 
-  private static Map<String, Collection<String>> toContextHeaders(Map<String, Object> messageHeaders) {
+  private Map<String, Collection<String>> toContextHeaders(Map<String, Object> messageHeaders) {
     return StreamEx.of(messageHeaders.entrySet())
         .filter(e -> isValidHeader(e.getKey()))
-        .toMap(Map.Entry::getKey, e -> {
-          Object x = e.getValue();
-          if (x instanceof byte[] bytes) {
-            return List.of(new String(bytes, StandardCharsets.UTF_8));
-          }
-          return List.of(String.valueOf(x));
-        });
+        .toMap(Map.Entry::getKey, e -> convertHeaderValue(e.getValue()));
+  }
+
+  @SneakyThrows
+  private List<String> convertHeaderValue(Object value) {
+    if (value instanceof byte[] bytes) {
+      return mapper.readValue(bytes, new TypeReference<>() {});
+    }
+    return List.of(String.valueOf(value));
   }
 
   private static boolean isValidHeader(String header) {
