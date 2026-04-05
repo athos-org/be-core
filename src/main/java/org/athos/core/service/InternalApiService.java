@@ -28,11 +28,11 @@ public class InternalApiService {
   private Cache<String, String> previousKeyCache;
   private Cache<String, String> gatewayAddressCache;
 
-  @Value("${athos.caches.api-key.current:3600}")
+  @Value("${integrations.cache.api-key-current.expire-minutes:5}")
   private int currentKeyExpiration;
-  @Value("${athos.caches.api-key.previous:900}")
+  @Value("${integrations.cache.api-key-previous.expire-minutes:5}")
   private int previousKeyExpiration;
-  @Value("${athos.caches.gateway-address:3600}")
+  @Value("${integrations.cache.gateway-address.expire-minutes:60}")
   private int gatewayAddressExpiration;
 
   @PostConstruct
