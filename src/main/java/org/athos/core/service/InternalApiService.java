@@ -29,23 +29,23 @@ public class InternalApiService {
   private Cache<String, String> gatewayAddressCache;
 
   @Value("${integrations.cache.api-key-current.expire-minutes:5}")
-  private int currentKeyExpiration;
+  private double currentKeyExpiration;
   @Value("${integrations.cache.api-key-previous.expire-minutes:5}")
-  private int previousKeyExpiration;
+  private double previousKeyExpiration;
   @Value("${integrations.cache.gateway-address.expire-minutes:60}")
-  private int gatewayAddressExpiration;
+  private double gatewayAddressExpiration;
 
   @PostConstruct
   public void init() {
     currentKeyCache = Caffeine.newBuilder().maximumSize(1)
-        .expireAfterWrite(currentKeyExpiration, TimeUnit.SECONDS)
+        .expireAfterWrite(Math.round(currentKeyExpiration * 60), TimeUnit.SECONDS)
         .evictionListener(this::keyExpirationCallback)
         .build();
     previousKeyCache = Caffeine.newBuilder().maximumSize(1)
-        .expireAfterWrite(previousKeyExpiration, TimeUnit.SECONDS)
+        .expireAfterWrite(Math.round(previousKeyExpiration * 60), TimeUnit.SECONDS)
         .build();
     gatewayAddressCache = Caffeine.newBuilder().maximumSize(1)
-        .expireAfterWrite(gatewayAddressExpiration, TimeUnit.SECONDS)
+        .expireAfterWrite(Math.round(gatewayAddressExpiration * 60), TimeUnit.SECONDS)
         .build();
   }
 

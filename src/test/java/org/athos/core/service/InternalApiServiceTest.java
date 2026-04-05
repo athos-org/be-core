@@ -20,7 +20,7 @@ public class InternalApiServiceTest extends CoreTest {
 
   @DynamicPropertySource
   static void overrideProperties(DynamicPropertyRegistry registry) {
-    registry.add("athos.caches.api-key.current", () -> 1); // 1 second
+    registry.add("integrations.cache.api-key-current.expire-minutes", () -> 0.01); // 1 second
   }
 
   @Test
